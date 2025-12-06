@@ -137,6 +137,7 @@ const handleRegister = async () => {
     console.log("REGISTER RESPONSE:", data)
 
     if (res.ok && data?.session?.access_token) {
+      console.log("token", data.session.access_token)
       localStorage.setItem("token", data.session.access_token)
       setView('dashboard')
     } else {
@@ -245,6 +246,7 @@ const handleAddSimpleLead = async () => {
     name: callName.trim(),
     number: callNumber.trim(),
   };
+  const token = localStorage.getItem("token")
 
   // أرسل البيانات للـ backend
   try {
@@ -252,6 +254,7 @@ const handleAddSimpleLead = async () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        auth :`Bearer ${token}`
       },
       body: JSON.stringify(next),
     });
