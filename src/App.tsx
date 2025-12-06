@@ -52,7 +52,7 @@ function App() {
     try {
       const token = localStorage.getItem("token")
 
-      const res = await fetch("https://call-center-backend-5yvd.onrender.com/airtable/getclients", {
+      const res = await fetch("http://localhost:8000/airtable/getclients", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -123,7 +123,7 @@ const handleRegister = async () => {
   }
 
   try {
-    const res = await fetch('https://call-center-backend-5yvd.onrender.com/register', {
+    const res = await fetch('http://localhost:8000/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -159,7 +159,7 @@ const handleRegister = async () => {
     }
     
     try {
-      const res = await fetch('https://call-center-backend-5yvd.onrender.com/login', {
+      const res = await fetch('http://localhost:8000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -189,13 +189,12 @@ const handleRegister = async () => {
     try {
       const token = localStorage.getItem("token")
 
-      const res = await fetch('https://call-center-backend-5yvd.onrender.com/airtable', {
+      const res = await fetch('http://localhost:8000/airtable', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
           auth: `Bearer ${token}` 
         },
-        body: JSON.stringify({})
       })
 
       if (res.status === 401) {
@@ -206,16 +205,16 @@ const handleRegister = async () => {
 
       const data = await res.json()
       type AirtableRecord = {
-  id: string
-  createdTime: string
-  fields: {
-    Name: string
-    Number: string
-    Intent: 'High Intent' | 'Medium Intent' | 'Low Intent'
-    Date?: string
-  }
-}
-      const leads: Lead[] = (data.records || []).map((r: AirtableRecord) => ({
+        id: string
+        createdTime: string
+        fields: {
+          Name: string
+          Number: string
+          Intent: 'High Intent' | 'Medium Intent' | 'Low Intent'
+          Date?: string
+        }
+      }
+      const leads: Lead[] = (data.records || []).map((r: any) => ({
         name: r.fields.Name,
         number: r.fields.Number,
         intent: r.fields.Intent,
@@ -232,11 +231,11 @@ const handleRegister = async () => {
   }
 
   // Load leads when dashboard appears
-  useEffect(() => {
-    if (view === 'dashboard' && dashboardView === 'signals') {
-      fetchLeadsFromBackend()
-    }
-  }, [view, dashboardView])
+useEffect(() => {
+  if (view === 'dashboard' && dashboardView === 'signals') {
+    fetchLeadsFromBackend()
+  }
+}, [view, dashboardView])
 
   // Add new simple lead (name + number only)
 const handleAddSimpleLead = async () => {
@@ -250,7 +249,7 @@ const handleAddSimpleLead = async () => {
 
   // أرسل البيانات للـ backend
   try {
-    const res = await fetch("https://call-center-backend-5yvd.onrender.com/airtable/save_clients", {
+    const res = await fetch("http://localhost:8000/airtable/save_clients", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
