@@ -52,7 +52,7 @@ function App() {
     try {
       const token = localStorage.getItem("token")
 
-      const res = await fetch("http://localhost:8000/airtable/getclients", {
+      const res = await fetch("https://call-center-backend-5yvd.onrender.com/airtable/getclients", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -123,7 +123,7 @@ const handleRegister = async () => {
   }
 
   try {
-    const res = await fetch('http://localhost:8000/register', {
+    const res = await fetch('https://call-center-backend-5yvd.onrender.com/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -159,7 +159,7 @@ const handleRegister = async () => {
     }
     
     try {
-      const res = await fetch('http://localhost:8000/login', {
+      const res = await fetch('https://call-center-backend-5yvd.onrender.com/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -189,7 +189,7 @@ const handleRegister = async () => {
     try {
       const token = localStorage.getItem("token")
 
-      const res = await fetch('http://localhost:8000/airtable', {
+      const res = await fetch('https://call-center-backend-5yvd.onrender.com/airtable', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -249,7 +249,7 @@ const handleAddSimpleLead = async () => {
 
   // أرسل البيانات للـ backend
   try {
-    const res = await fetch("http://localhost:8000/airtable/save_clients", {
+    const res = await fetch("https://call-center-backend-5yvd.onrender.com/airtable/save_clients", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
