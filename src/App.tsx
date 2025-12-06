@@ -52,7 +52,7 @@ function App() {
     try {
       const token = localStorage.getItem("token")
 
-      const res = await fetch("https://call-center-backend-5yvd.onrender.com/airtable/getclients", {
+      const res = await fetch("http://localhost:8000/airtable/getclients", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -123,7 +123,7 @@ const handleRegister = async () => {
   }
 
   try {
-    const res = await fetch('https://call-center-backend-5yvd.onrender.com/register', {
+    const res = await fetch('http://localhost:8000/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -158,7 +158,7 @@ const handleRegister = async () => {
     }
     
     try {
-      const res = await fetch('https://call-center-backend-5yvd.onrender.com/login', {
+      const res = await fetch('http://localhost:8000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -188,7 +188,7 @@ const handleRegister = async () => {
     try {
       const token = localStorage.getItem("token")
 
-      const res = await fetch('https://call-center-backend-5yvd.onrender.com/airtable', {
+      const res = await fetch('http://localhost:8000/airtable', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -248,7 +248,7 @@ const handleAddSimpleLead = async () => {
 
   // أرسل البيانات للـ backend
   try {
-    const res = await fetch("https://call-center-backend-5yvd.onrender.com/airtable/save_clients", {
+    const res = await fetch("http://localhost:8000/airtable/save_clients", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -274,7 +274,7 @@ const handleAddSimpleLead = async () => {
   console.log("Calling lead:", lead);
 
   try {
-    const res = await fetch("https://n8n.srv1004057.hstgr.cloud/webhook/calling", {
+    const res = await fetch("https://n8n.srv1004057.hstgr.cloud/webhook/callone", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -290,8 +290,22 @@ const handleAddSimpleLead = async () => {
 };
  
 
-  const handleCallAll = () => {
+  const handleCallAll = async() => {
     console.log('Calling all leads:', simpleLeads)
+
+  try {
+    const res = await fetch("https://n8n.srv1004057.hstgr.cloud/webhook/calling", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await res.json();
+    console.log("Response from n8n:", data);
+  } catch (err) {
+    console.error("Error calling lead:", err);
+  }
   }
 
   // Optional: CSV upload for bulk numbers (simple name,number per line)
