@@ -1,5 +1,5 @@
 import './App.css'
-import { type CSSProperties, useState, useEffect, type ChangeEvent } from 'react'
+import { type CSSProperties, useState, useEffect } from 'react'
 
 type AuthView = 'login' | 'register' | 'dashboard'
 type DashboardView = 'call' | 'signals'
@@ -52,7 +52,7 @@ function App() {
     try {
       const token = localStorage.getItem("token")
 
-      const res = await fetch("http://127.0.0.1:8000/airtable/getclients", {
+      const res = await fetch("https://call-center-backend-5yvd.onrender.com/airtable/getclients", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,9 +68,20 @@ function App() {
       }
 
       const data = await res.json()
-
+      
+      type AirtableRecord = {
+  id: string
+  createdTime: string
+  fields: {
+    Name: string
+    Number: string
+    Intent: 'High Intent' | 'Medium Intent' | 'Low Intent'
+    Date?: string
+  }
+}
+      
       // حول البيانات إلى صيغة SimpleLead
-      const leads: SimpleLead[] = (data.records || []).map((r: any) => ({
+      const leads: SimpleLead[] = (data.records || []).map((r: AirtableRecord) => ({
         name: r.fields.Name,
         number: r.fields.Number
       }))
@@ -98,39 +109,46 @@ function App() {
   }, [])
 
   // REGISTER
-  const handleRegister = async () => {
-    if (!email || !password || !name) {
-      console.log('You must fill all fields')
-      return
-    }
+const handleRegister = async () => {
+  setError('') // امسح أي خطأ سابق
 
-    if (password !== confirm) {
-      console.log('Passwords do not match')
-      return
-    }
-
-    try {
-      const res = await fetch('http://127.0.0.1:8000/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_name: name,
-          email,
-          password
-        })
-      })
-
-      const data = await res.json()
-      console.log("REGISTER RESPONSE:", data)
-
-      if (data?.session?.access_token) {
-        localStorage.setItem("token", data.session.access_token)
-        setView('dashboard')
-      }
-    } catch (err) {
-      console.error('Register error:', err)
-    }
+  if (!email || !password || !name) {
+    setError('You must fill all fields')
+    return
   }
+
+  if (password !== confirm) {
+    setError('Passwords do not match')
+    return
+  }
+
+  try {
+    const res = await fetch('https://call-center-backend-5yvd.onrender.com/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_name: name,
+        email,
+        password
+      })
+    })
+
+    const data = await res.json()
+    console.log("REGISTER RESPONSE:", data)
+
+    if (res.ok && data?.session?.access_token) {
+      localStorage.setItem("token", data.session.access_token)
+      setView('dashboard')
+    } else {
+      setError(data?.detail || 'Registration failed') // عرض الخطأ من backend
+    }
+  } catch (err: any) {
+    console.error('Register error:', err)
+    setError(err.message || 'Network error')
+  }
+}
+
+
 
   // LOGIN
   const handleLogin = async () => {
@@ -140,7 +158,7 @@ function App() {
     }
     
     try {
-      const res = await fetch('http://127.0.0.1:8000/login', {
+      const res = await fetch('https://call-center-backend-5yvd.onrender.com/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -170,7 +188,7 @@ function App() {
     try {
       const token = localStorage.getItem("token")
 
-      const res = await fetch('http://127.0.0.1:8000/airtable', {
+      const res = await fetch('https://call-center-backend-5yvd.onrender.com/airtable', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -186,8 +204,17 @@ function App() {
       }
 
       const data = await res.json()
-
-      const leads: Lead[] = (data.records || []).map((r: any) => ({
+      type AirtableRecord = {
+  id: string
+  createdTime: string
+  fields: {
+    Name: string
+    Number: string
+    Intent: 'High Intent' | 'Medium Intent' | 'Low Intent'
+    Date?: string
+  }
+}
+      const leads: Lead[] = (data.records || []).map((r: AirtableRecord) => ({
         name: r.fields.Name,
         number: r.fields.Number,
         intent: r.fields.Intent,
@@ -221,7 +248,7 @@ const handleAddSimpleLead = async () => {
 
   // أرسل البيانات للـ backend
   try {
-    const res = await fetch("http://127.0.0.1:8000/airtable/save_clients", {
+    const res = await fetch("https://call-center-backend-5yvd.onrender.com/airtable/save_clients", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
